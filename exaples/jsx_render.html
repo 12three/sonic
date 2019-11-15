@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Render markup from js</title>
+        <script type="module" src="../src/module.js" id="sonicScript"></script>
+    </head>
+    <body>
+        <div id="app"></div>
+    </body>
+    <script>
+        const script = document.querySelector('#sonicScript');
+
+        script.addEventListener('load', () => {
+            const app = Sonic.createElement(
+                'div',
+                null,
+                Sonic.createElement('h1', {style: 'color: red'}, 'This text rendered dynamically'),
+                Sonic.createElement('p', null, 'Some text'),
+            );
+
+            Sonic.render(app, document.querySelector('#app'));
+        })
+    </script>
+</html>
