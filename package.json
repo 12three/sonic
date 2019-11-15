@@ -1,0 +1,20 @@
+{
+  "name": "sonic",
+  "version": "1.0.0",
+  "description": "React-like library",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "jest": "^24.9.0"
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.7.0"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "12three",
+  "license": "ISC"
+}
