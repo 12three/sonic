@@ -16,16 +16,34 @@ export function createDom(fiber) {
     return dom
 }
 
+function commitRoot() {
+    // add nodes to the dom
+    commitWork(wipRoot.child);
+    wipRoot = null;
+}
+
+function commitWork(fiber) {
+    if (!fiber) {
+        return
+    }
+    const domParent = fiber.parent.dom;
+    domParent.appendChild(fiber.dom);
+    commitWork(fiber.child);
+    commitWork(fiber.sibling);
+}
+
 export function render(element, container) {
-    nextUnitOfWork = {
+    wipRoot = {
         dom: container,
         props: {
             children: [element]
         }
-    }
+    };
+    nextUnitOfWork = wipRoot;
 }
 
 let nextUnitOfWork = null;
+let wipRoot = null;
 
 function workLoop (deadline) {
     let shouldYield = false;
@@ -33,19 +51,19 @@ function workLoop (deadline) {
         nextUnitOfWork = preformUnitOfWork(nextUnitOfWork);
         shouldYield = deadline.timeRemaining() < 1;
     }
+
+    if(!nextUnitOfWork && wipRoot) {
+        commitRoot();
+    }
+
     requestIdleCallback(workLoop);
 }
 
 requestIdleCallback(workLoop);
 
 function preformUnitOfWork (fiber) {
-    // add new dom node
     if (!fiber.dom) {
         fiber.dom = createDom(fiber);
-    }
-
-    if (fiber.parent) {
-        fiber.parent.dom.appendChild(fiber.dom);
     }
 
     // create new fibers
