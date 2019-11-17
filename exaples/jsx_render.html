@@ -12,14 +12,17 @@
         const script = document.querySelector('#sonicScript');
 
         script.addEventListener('load', () => {
-            const app = Sonic.createElement(
-                'div',
-                null,
-                Sonic.createElement('h1', {style: 'color: red'}, 'This text rendered dynamically'),
-                Sonic.createElement('p', null, 'Some text'),
-            );
+            function App( props ) {
+                return Sonic.createElement(
+                    'h1',
+                    null,
+                    'Hi, ',
+                    props.name
+                );
+            }
+            const element = Sonic.createElement(App, { name: 'Creator!' });
 
-            Sonic.render(app, document.querySelector('#app'));
+            Sonic.render(element, document.querySelector('#app'));
         })
     </script>
 </html>

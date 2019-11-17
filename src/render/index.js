@@ -45,12 +45,13 @@ function workLoop(deadline) {
 requestIdleCallback(workLoop);
 
 function preformUnitOfWork(fiber) {
-    if (!fiber.dom) {
-        fiber.dom = createDom(fiber);
-    }
+    const isFunctionalComponent = fiber.type instanceof Function;
 
-    const elements = fiber.props.children;
-    reconcileChildren(fiber, elements);
+    if (isFunctionalComponent) {
+        updateFunctionComponent(fiber)
+    } else {
+        updateHostComponent(fiber)
+    }
 
     // seeking the next unit of work
     if (fiber.child) {
@@ -64,6 +65,20 @@ function preformUnitOfWork(fiber) {
         }
         nextFiber = nextFiber.parent;
     }
+}
+
+function updateFunctionComponent(fiber) {
+    const children = [fiber.type(fiber.props)];
+    reconcileChildren(fiber, children);
+}
+
+function updateHostComponent(fiber) {
+    if (!fiber.dom) {
+        fiber.dom = createDom(fiber);
+    }
+
+    const elements = fiber.props.children;
+    reconcileChildren(fiber, elements);
 }
 
 
@@ -139,7 +154,12 @@ function commitWork(fiber) {
     if (!fiber) {
         return
     }
-    const domParent = fiber.parent.dom;
+
+    let domParentFiber = fiber.parent;
+    while (!domParentFiber.dom) {
+        domParentFiber = domParentFiber.parent
+    }
+    const domParent = domParentFiber.dom;
 
     if (
         fiber.effectTag === EFFECT_TAGS.PLACEMENT
@@ -158,11 +178,19 @@ function commitWork(fiber) {
     } else if (
         fiber.effectTag === EFFECT_TAGS.DELETION
     ) {
-        domParent.removeChild(fiber.dom)
+        commitDeletion(fiber, domParent)
     }
 
     commitWork(fiber.child);
     commitWork(fiber.sibling);
+}
+
+function commitDeletion(fiber, domParent) {
+    if (fiber.dom) {
+        domParent.removeChild(fiber.dom)
+    } else {
+        commitDeletion(fiber.child, domParent)
+    }
 }
 
 
