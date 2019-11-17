@@ -1,0 +1,5 @@
+export const EFFECT_TAGS = {
+    UPDATE: 'UPDATE',
+    PLACEMENT: 'PLACEMENT',
+    DELETION: 'DELETION',
+};
