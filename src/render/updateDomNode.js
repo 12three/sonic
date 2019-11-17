@@ -40,7 +40,7 @@ export function updateDomNode(dom, prevProps, nextProps) {
                 .substring(2);
             dom.addEventListener(
                 eventType,
-                prevProps[name],
+                nextProps[name],
             )
         })
 }

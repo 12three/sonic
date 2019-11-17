@@ -10,17 +10,41 @@
     </body>
     <script>
         const script = document.querySelector('#sonicScript');
-
         script.addEventListener('load', () => {
-            function App( props ) {
+
+            function App() {
+                const [state, setState] = Sonic.useState(0);
+                const increment = () => setState(state => state + 1 );
+                const decrement = () => setState(state => state > 0 ? state - 1 : 0 );
+
                 return Sonic.createElement(
-                    'h1',
+                    'div',
                     null,
-                    'Hi, ',
-                    props.name
+                    Sonic.createElement(
+                        'button',
+                        {
+                            onClick: increment,
+                        },
+                        'increment',
+                    ),
+                    Sonic.createElement(
+                        'button',
+                        {
+                            disabled: state <= 0,
+                            onClick: decrement,
+                        },
+                        'decrement',
+                    ),
+                    Sonic.createElement(
+                        'div',
+                        {
+                            style: 'color: green'
+                        },
+                        `Count: ${state}`,
+                    ),
                 );
             }
-            const element = Sonic.createElement(App, { name: 'Creator!' });
+            const element = Sonic.createElement(App, null);
 
             Sonic.render(element, document.querySelector('#app'));
         })
